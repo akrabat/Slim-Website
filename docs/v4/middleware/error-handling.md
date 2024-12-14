@@ -266,8 +266,8 @@ class HttpGatewayTimeoutException extends HttpSpecializedException
 {
     protected $code = 504;
     protected $message = 'Gateway Timeout.';
-    protected $title = '504 Gateway Timeout';
-    protected $description = 'Timed out before receiving response from the upstream server.';
+    protected string $title = '504 Gateway Timeout';
+    protected string $description = 'Timed out before receiving response from the upstream server.';
 }
 ```
 
