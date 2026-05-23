@@ -1,0 +1,41 @@
+# Local preview of the Slim website with Jekyll — no Ruby needed on the host.
+#   Start:  docker compose up
+#   View:   http://localhost:4000
+#   Stop:   Ctrl-C   (then optionally: docker compose down)
+services:
+  jekyll:
+    image: ruby:3.3
+    working_dir: /site
+    environment:
+      # Always use the bundler shipped in the image, whatever the
+      # `BUNDLED WITH` pin in Gemfile.lock happens to be.
+      BUNDLE_VERSION: system
+      # Never rewrite Gemfile.lock from inside the container.
+      BUNDLE_FROZEN: "true"
+    command: >
+      bash -c "bundle install &&
+      bundle exec jekyll serve --host 0.0.0.0 --livereload --force_polling"
+    ports:
+      - "4000:4000"    # site
+      - "35729:35729"  # livereload
+    volumes:
+      - .:/site                 # the repo, live-mounted
+      - gems:/usr/local/bundle  # installed gems, cached between runs
+
+  # CSS toolchain (Less + grunt). Opt-in — not started by `docker compose up`.
+  #   Watch:    docker compose up css
+  #   One-off:  docker compose run --rm css npx grunt
+  css:
+    profiles: ["css"]
+    image: node:22
+    working_dir: /site
+    # Always ensure npm packages are installed before running the command.
+    entrypoint: ["sh", "-c", "npm install --silent --no-audit --no-fund && exec \"$$@\"", "--"]
+    command: ["npx", "grunt", "watch"]
+    volumes:
+      - .:/site
+      - css_node_modules:/site/node_modules  # npm packages, cached between runs
+
+volumes:
+  gems:
+  css_node_modules:
