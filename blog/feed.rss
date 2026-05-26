@@ -14,7 +14,7 @@ layout: blank
         <webMaster>hello@joshlockhart.com</webMaster>
         {% for post in site.posts limit:10 %}
         <item>
-            <title>{{ post.title }}</title>
+            <title>{{ post.title | xml_escape }}</title>
             <link>{{ site.url }}{{ post.url }}</link>
             <description>
                 <![CDATA[
